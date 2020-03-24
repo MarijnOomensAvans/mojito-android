@@ -1,6 +1,8 @@
 package com.example.mojito;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -19,8 +21,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
+
+    private ArrayList<String> cocktailNames = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +36,8 @@ public class MainActivity extends AppCompatActivity {
         fetchData();
     }
 
-    private void fetchData() {
-        final TextView textView = findViewById(R.id.text_view);
 
+    private void fetchData() {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url ="https://www.thecocktaildb.com/api/json/v2/9973533/popular.php";
 
@@ -42,8 +47,10 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONArray popularCocktails = response.getJSONArray("drinks");
                     for (int i = 0; i < popularCocktails.length(); i++) {
-                        textView.setText(textView.getText() + popularCocktails.getJSONObject(i).getString("strDrink"));
+//                        textView.setText(textView.getText() + popularCocktails.getJSONObject(i).getString("strDrink"));
+                        cocktailNames.add(popularCocktails.getJSONObject(i).getString("strDrink"));
                     }
+                    initRecyclerView();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -58,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
         queue.add(popularCocktailsRequest);
     }
 
+    private void initRecyclerView() {
+        Log.d(TAG, "initRecyclerView: Initialising recycler view");
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(cocktailNames, this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
 
 
 }
