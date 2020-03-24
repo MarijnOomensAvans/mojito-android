@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Mojito</string>
+    <string name="application_logo">Application logo</string>
 </resources>
