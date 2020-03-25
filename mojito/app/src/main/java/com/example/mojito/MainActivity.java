@@ -1,6 +1,8 @@
 package com.example.mojito;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,55 +25,21 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity {
     public static final String TAG = "MainActivity";
-
-    private ArrayList<String> cocktailNames = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fetchData();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_container, new OverviewListFragment());
+        ft.commit();
     }
 
 
-    private void fetchData() {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="https://www.thecocktaildb.com/api/json/v2/9973533/popular.php";
 
-        JsonObjectRequest popularCocktailsRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONArray popularCocktails = response.getJSONArray("drinks");
-                    for (int i = 0; i < popularCocktails.length(); i++) {
-//                        textView.setText(textView.getText() + popularCocktails.getJSONObject(i).getString("strDrink"));
-                        cocktailNames.add(popularCocktails.getJSONObject(i).getString("strDrink"));
-                    }
-                    initRecyclerView();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // Handle error
-            }
-        });
-
-        queue.add(popularCocktailsRequest);
-    }
-
-    private void initRecyclerView() {
-        Log.d(TAG, "initRecyclerView: Initialising recycler view");
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(cocktailNames, this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
 
 
 }
