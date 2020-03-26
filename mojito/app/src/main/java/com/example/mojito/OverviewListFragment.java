@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,11 +26,23 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class OverviewListFragment extends Fragment {
+public class OverviewListFragment extends Fragment  {
 
     public static final String TAG = "OverviewListFragment";
 
+    private ArrayList<Integer> cocktailIds = new ArrayList<>();
     private ArrayList<String> cocktailNames = new ArrayList<>();
+
+    private OnItemSelectedListener listener;
+
+    public interface OnItemSelectedListener {
+        void onItemSelected(Integer id);
+    }
+
+    public void setListener(OnItemSelectedListener listener) {
+        this.listener = listener;
+    }
+
 
     @Nullable
     @Override
@@ -38,7 +51,11 @@ public class OverviewListFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: View created");
 
-        fetchData(view);
+        if (cocktailNames.isEmpty()) {
+            fetchData(view);
+        } else {
+            initRecyclerView(view);
+        }
 
         return view;
     }
@@ -53,6 +70,7 @@ public class OverviewListFragment extends Fragment {
                 try {
                     JSONArray popularCocktails = response.getJSONArray("drinks");
                     for (int i = 0; i < popularCocktails.length(); i++) {
+                        cocktailIds.add(popularCocktails.getJSONObject(i).getInt("idDrink"));
                         cocktailNames.add(popularCocktails.getJSONObject(i).getString("strDrink"));
                     }
                     initRecyclerView(view);
@@ -73,8 +91,17 @@ public class OverviewListFragment extends Fragment {
     private void initRecyclerView(View view) {
         Log.d(TAG, "initRecyclerView: Initialising recycler view");
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(cocktailNames, getActivity().getApplicationContext());
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(cocktailNames, cocktailIds);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplicationContext()));
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (getActivity() instanceof OverviewListFragment.OnItemSelectedListener) {
+            listener = (OnItemSelectedListener) getActivity();
+        }
     }
 }

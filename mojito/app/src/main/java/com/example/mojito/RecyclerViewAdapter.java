@@ -1,5 +1,6 @@
 package com.example.mojito;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -18,11 +20,11 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewH
     private static final String TAG = "RecyclerViewAdapter";
 
     private ArrayList<String> cocktailNames;
-    private Context context;
+    private ArrayList<Integer> cocktailIds;
 
-    RecyclerViewAdapter(ArrayList<String> cocktailNames, Context context) {
+    RecyclerViewAdapter(ArrayList<String> cocktailNames, ArrayList<Integer> cocktailIds) {
         this.cocktailNames = cocktailNames;
-        this.context = context;
+        this.cocktailIds = cocktailIds;
     }
 
     @NonNull
@@ -43,7 +45,9 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewH
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked on " + cocktailNames.get(position));
 
-                Toast.makeText(context, cocktailNames.get(position), Toast.LENGTH_SHORT).show();
+                MainActivity mainActivity = (MainActivity) v.getContext();
+                mainActivity.onItemSelected(cocktailIds.get(position));
+
             }
         });
     }

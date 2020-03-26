@@ -25,7 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements OverviewListFragment.OnItemSelectedListener {
     public static final String TAG = "MainActivity";
 
     @Override
@@ -39,7 +39,17 @@ public class MainActivity extends FragmentActivity {
     }
 
 
+    @Override
+    public void onItemSelected(Integer id) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("id", id);
 
+        CocktailDetailFragment cocktailDetailFragment = new CocktailDetailFragment();
+        cocktailDetailFragment.setArguments(bundle);
 
-
+        FragmentTransaction f = getSupportFragmentManager().beginTransaction();
+        f.replace(R.id.fragment_container, cocktailDetailFragment);
+        f.addToBackStack("detail");
+        f.commit();
+    }
 }
