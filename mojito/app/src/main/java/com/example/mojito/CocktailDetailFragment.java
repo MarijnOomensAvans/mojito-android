@@ -24,6 +24,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class CocktailDetailFragment extends Fragment {
     public static final String TAG = "CocktailDetailFragment";
 
@@ -31,6 +33,8 @@ public class CocktailDetailFragment extends Fragment {
     private String name;
     private String instructions;
     private String image;
+    private ArrayList<String> ingredients = new ArrayList<>();
+    private ArrayList<String> amounts = new ArrayList<>();
 
     @Nullable
     @Override
@@ -62,6 +66,13 @@ public class CocktailDetailFragment extends Fragment {
                     instructions = cocktail.getString("strInstructions");
                     image = cocktail.getString("strDrinkThumb");
 
+                    for (int i = 1; i <= 15; i++) {
+                        String ingredient = cocktail.getString("strIngredient" + i);
+                        if (ingredient.equals("null")) break;
+                        ingredients.add(ingredient);
+                        amounts.add(cocktail.getString("strMeasure" + i));
+                    }
+
                     initialiseView(view);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -83,6 +94,24 @@ public class CocktailDetailFragment extends Fragment {
 
         TextView instructionsText = view.findViewById(R.id.detail_instructions);
         instructionsText.setText(instructions);
+
+        TextView ingredientsTitleText = view.findViewById(R.id.detail_ingredients_title);
+        ingredientsTitleText.setText(R.string.ingredients);
+
+        TextView ingredientsText = view.findViewById(R.id.detail_ingredients);
+
+        StringBuilder measureIngredients = new StringBuilder();
+
+        for (int i = 0; i < ingredients.size(); i++) {
+            String appendAmount = "";
+            String amount = amounts.get(i);
+            if (!amount.equals("null")) {
+                appendAmount = amount + " ";
+            }
+            measureIngredients.append(appendAmount).append(ingredients.get(i)).append("\n");
+        }
+
+        ingredientsText.setText(measureIngredients.toString());
 
         loadImage(view);
     }

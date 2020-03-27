@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Mojito</string>
     <string name="application_logo">Application logo</string>
+    <string name="photograph_of_cocktail">Photograph of cocktail</string>
+    <string name="ingredients">Ingredients</string>
 </resources>
