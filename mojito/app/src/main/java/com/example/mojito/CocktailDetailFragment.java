@@ -37,6 +37,12 @@ public class CocktailDetailFragment extends Fragment {
     private ArrayList<String> ingredients = new ArrayList<>();
     private ArrayList<String> amounts = new ArrayList<>();
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

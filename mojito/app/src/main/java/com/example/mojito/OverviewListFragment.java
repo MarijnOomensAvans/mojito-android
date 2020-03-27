@@ -43,6 +43,11 @@ public class OverviewListFragment extends Fragment  {
         this.listener = listener;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Nullable
     @Override
