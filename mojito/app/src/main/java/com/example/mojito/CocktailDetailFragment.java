@@ -33,6 +33,7 @@ public class CocktailDetailFragment extends Fragment {
     private String name;
     private String instructions;
     private String image;
+    private String glass;
     private ArrayList<String> ingredients = new ArrayList<>();
     private ArrayList<String> amounts = new ArrayList<>();
 
@@ -65,6 +66,7 @@ public class CocktailDetailFragment extends Fragment {
                     name = cocktail.getString("strDrink");
                     instructions = cocktail.getString("strInstructions");
                     image = cocktail.getString("strDrinkThumb");
+                    glass = "Glass: " + cocktail.getString("strGlass");
 
                     for (int i = 1; i <= 15; i++) {
                         String ingredient = cocktail.getString("strIngredient" + i);
@@ -112,6 +114,9 @@ public class CocktailDetailFragment extends Fragment {
         }
 
         ingredientsText.setText(measureIngredients.toString());
+
+        TextView glassText = view.findViewById(R.id.detail_glass);
+        glassText.setText(glass);
 
         loadImage(view);
     }
