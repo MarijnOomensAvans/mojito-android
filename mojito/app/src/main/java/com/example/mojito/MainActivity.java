@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+
 import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity implements OverviewListFragment.OnItemSelectedListener {
@@ -38,5 +41,12 @@ public class MainActivity extends AppCompatActivity implements OverviewListFragm
         f.replace(R.id.fragment_container, cocktailDetailFragment);
         f.addToBackStack("detail");
         f.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
     }
 }
