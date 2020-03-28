@@ -33,9 +33,11 @@ public class MainActivity extends FragmentActivity implements OverviewListFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, new OverviewListFragment());
-        ft.commit();
+        if (savedInstanceState == null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_container, new OverviewListFragment());
+            ft.commit();
+        }
     }
 
 
