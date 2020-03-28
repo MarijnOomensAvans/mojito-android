@@ -1,11 +1,14 @@
 package com.example.mojito;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import static android.app.Activity.RESULT_OK;
 
 public class CocktailDetailFragment extends Fragment {
     public static final String TAG = "CocktailDetailFragment";
@@ -54,6 +59,14 @@ public class CocktailDetailFragment extends Fragment {
         if (bundle != null) {
             id = bundle.getInt("id");
         }
+
+        Button photoButton = view.findViewById(R.id.photobutton);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                takePhoto(v);
+            }
+        });
 
         fetchCocktail(view);
 
@@ -147,6 +160,23 @@ public class CocktailDetailFragment extends Fragment {
                 });
 
         queue.add(request);
+    }
+
+    public void takePhoto(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(intent, 1);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            ImageView imageView = getView().findViewById(R.id.ownPhoto);
+            imageView.setImageBitmap(imageBitmap);
+        }
     }
 
 }
