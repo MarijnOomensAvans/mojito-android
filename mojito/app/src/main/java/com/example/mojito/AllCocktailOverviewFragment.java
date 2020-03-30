@@ -21,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mojito.models.Cocktail;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,8 +31,7 @@ import java.util.ArrayList;
 
 public class AllCocktailOverviewFragment extends Fragment {
 
-    private ArrayList<Integer> cocktailIds = new ArrayList<>();
-    private ArrayList<String> cocktailNames = new ArrayList<>();
+    private ArrayList<Cocktail> cocktails = new ArrayList<>();
     public static final String TAG = "AllCocktailFragment";
 
     private AllCocktailOverviewFragment.OnItemSelectedListener listener;
@@ -43,7 +43,7 @@ public class AllCocktailOverviewFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_cocktail_overview_fragment, container, false);
-        if (cocktailNames.isEmpty()) {
+        if (cocktails.isEmpty()) {
             fetchData(view);
         } else {
             initRecyclerView(view);
@@ -62,8 +62,7 @@ public class AllCocktailOverviewFragment extends Fragment {
                 try {
                     JSONArray popularCocktails = response.getJSONArray("drinks");
                     for (int i = 0; i < popularCocktails.length(); i++) {
-                        cocktailIds.add(popularCocktails.getJSONObject(i).getInt("idDrink"));
-                        cocktailNames.add(popularCocktails.getJSONObject(i).getString("strDrink"));
+                        cocktails.add(new Cocktail(popularCocktails.getJSONObject(i).getInt("idDrink"), popularCocktails.getJSONObject(i).getString("strDrink")));
                     }
                     initRecyclerView(view);
                 } catch (JSONException e) {
@@ -81,7 +80,7 @@ public class AllCocktailOverviewFragment extends Fragment {
     }
     private void initRecyclerView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_all);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(cocktailNames, cocktailIds);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(cocktails);
         recyclerView.setAdapter(adapter);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
