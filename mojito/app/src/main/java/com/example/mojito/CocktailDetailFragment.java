@@ -23,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mojito.models.Cocktail;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,12 +36,7 @@ public class CocktailDetailFragment extends Fragment {
     public static final String TAG = "CocktailDetailFragment";
 
     private int id;
-    private String name;
-    private String instructions;
-    private String image;
-    private String glass;
-    private ArrayList<String> ingredients = new ArrayList<>();
-    private ArrayList<String> amounts = new ArrayList<>();
+    private Cocktail mCocktail;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +56,7 @@ public class CocktailDetailFragment extends Fragment {
             id = bundle.getInt("id");
         }
 
-        Button photoButton = view.findViewById(R.id.photobutton);
+        Button photoButton = view.findViewById(R.id.photo_button);
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,10 +78,13 @@ public class CocktailDetailFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 try {
                     JSONObject cocktail = response.getJSONArray("drinks").getJSONObject(0);
-                    name = cocktail.getString("strDrink");
-                    instructions = cocktail.getString("strInstructions");
-                    image = cocktail.getString("strDrinkThumb");
-                    glass = "Glass: " + cocktail.getString("strGlass");
+                    mCocktail = new Cocktail(id, cocktail.getString("strDrink"));
+                    mCocktail.setmInstructions(cocktail.getString("strInstructions"));
+                    mCocktail.setmImage(cocktail.getString("strDrinkThumb"));
+                    mCocktail.setmGlass(cocktail.getString("strGlass"));
+
+                    ArrayList<String> ingredients = new ArrayList<>();
+                    ArrayList<String> amounts = new ArrayList<>();
 
                     for (int i = 1; i <= 15; i++) {
                         String ingredient = cocktail.getString("strIngredient" + i);
@@ -93,6 +92,9 @@ public class CocktailDetailFragment extends Fragment {
                         ingredients.add(ingredient);
                         amounts.add(cocktail.getString("strMeasure" + i));
                     }
+
+                    mCocktail.setmIngredients(ingredients);
+                    mCocktail.setmAmounts(amounts);
 
                     initialiseView(view);
                 } catch (JSONException e) {
@@ -111,10 +113,10 @@ public class CocktailDetailFragment extends Fragment {
 
     private void initialiseView(View view) {
         TextView nameText = view.findViewById(R.id.detail_name);
-        nameText.setText(name);
+        nameText.setText(mCocktail.getmName());
 
         TextView instructionsText = view.findViewById(R.id.detail_instructions);
-        instructionsText.setText(instructions);
+        instructionsText.setText(mCocktail.getmInstructions());
 
         TextView ingredientsTitleText = view.findViewById(R.id.detail_ingredients_title);
         ingredientsTitleText.setText(R.string.ingredients);
@@ -123,19 +125,22 @@ public class CocktailDetailFragment extends Fragment {
 
         StringBuilder measureIngredients = new StringBuilder();
 
-        for (int i = 0; i < ingredients.size(); i++) {
+        for (int i = 0; i < mCocktail.getmIngredients().size(); i++) {
             String appendAmount = "";
-            String amount = amounts.get(i);
+            String amount = mCocktail.getmAmounts().get(i);
             if (!amount.equals("null")) {
                 appendAmount = amount + " ";
             }
-            measureIngredients.append(appendAmount).append(ingredients.get(i)).append("\n");
+            measureIngredients.append(appendAmount).append(mCocktail.getmIngredients().get(i)).append("\n");
         }
 
         ingredientsText.setText(measureIngredients.toString());
 
         TextView glassText = view.findViewById(R.id.detail_glass);
-        glassText.setText(glass);
+        glassText.setText(mCocktail.getmGlass());
+
+        TextView yourPhotoText = view.findViewById(R.id.your_photo);
+        yourPhotoText.setText(R.string.your_photo);
 
         loadImage(view);
     }
@@ -146,7 +151,7 @@ public class CocktailDetailFragment extends Fragment {
         final ImageView mImageView;
         mImageView = view.findViewById(R.id.detail_image);
 
-        ImageRequest request = new ImageRequest(image,
+        ImageRequest request = new ImageRequest(mCocktail.getmImage(),
                 new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap bitmap) {
