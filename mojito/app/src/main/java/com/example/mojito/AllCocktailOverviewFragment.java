@@ -84,16 +84,6 @@ public class AllCocktailOverviewFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-               // if(dy > 0){
-              //      int visibleItemCount = layoutManager.getChildCount();
-               //     int totalItemCount = layoutManager.getItemCount();
-                //    int pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
-               // }
-            }
-        });
     }
 
     @Override
