@@ -1,7 +1,5 @@
 package com.example.mojito;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
