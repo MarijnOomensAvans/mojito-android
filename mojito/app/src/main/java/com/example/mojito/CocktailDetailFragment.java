@@ -1,8 +1,16 @@
 package com.example.mojito;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +22,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.Request;
@@ -28,9 +38,14 @@ import com.example.mojito.models.Cocktail;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 
 public class CocktailDetailFragment extends Fragment {
     public static final String TAG = "CocktailDetailFragment";
@@ -60,11 +75,12 @@ public class CocktailDetailFragment extends Fragment {
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takePhoto(v);
+                takePhoto();
             }
         });
 
         fetchCocktail(view);
+        requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
 
         return view;
     }
@@ -107,7 +123,6 @@ public class CocktailDetailFragment extends Fragment {
                 Log.d(TAG, "onErrorResponse: An error occurred while fetching popular cocktails");
             }
         });
-
         queue.add(cocktailRequest);
     }
 
@@ -143,6 +158,16 @@ public class CocktailDetailFragment extends Fragment {
         yourPhotoText.setText(R.string.your_photo);
 
         loadImage(view);
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            SharedPreferences prefs = getActivity().getSharedPreferences(MY_File_NAME, MODE_PRIVATE);
+            String photoLocation = prefs.getString("PhotoCocktail" + name, "");
+            if (!photoLocation.equals("")) {
+                Bitmap bmp = BitmapFactory.decodeFile(photoLocation);
+                ImageView imageView = view.findViewById(R.id.ownPhoto);
+                imageView.setImageBitmap(bmp);
+            }
+        }
     }
 
     private void loadImage(View view) {
@@ -167,10 +192,30 @@ public class CocktailDetailFragment extends Fragment {
         queue.add(request);
     }
 
-    public void takePhoto(View view) {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(intent, 1);
+    public void takePhoto() {
+        if (ContextCompat.checkSelfPermission(getContext(),
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivityForResult(intent, 1);
+            }
+        } else {
+            requestPermissions(new String[] {Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION_CAMERA)  {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivityForResult(intent, 1);
+                }
+                }else {
+               return;
+            }
         }
     }
 
@@ -181,6 +226,33 @@ public class CocktailDetailFragment extends Fragment {
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             ImageView imageView = getView().findViewById(R.id.ownPhoto);
             imageView.setImageBitmap(imageBitmap);
+            requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+            requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                String fileName = "/PhotoCocktail" + name + ".png";
+                File file = new File(path, fileName);
+                if (file.exists ()) file.delete ();
+                try {
+                    path.mkdirs();
+                    FileOutputStream outStream = new FileOutputStream(file.getAbsoluteFile());
+                    imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    outStream.flush();
+                    outStream.close();
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences(MY_File_NAME, MODE_PRIVATE).edit();
+                    editor.putString("PhotoCocktail" + name, file.getAbsolutePath());
+                    editor.apply();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            else{
+                return;
+            }
         }
     }
 
