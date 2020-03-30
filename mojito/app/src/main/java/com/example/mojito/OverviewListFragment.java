@@ -1,5 +1,6 @@
 package com.example.mojito;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -86,6 +87,13 @@ public class OverviewListFragment extends Fragment  {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: An error occurred while fetching popular cocktails");
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                builder.setMessage("Cocktails could not be fetched, please make sure that you are connected to the internet.")
+                        .setTitle("Connection error");
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 
