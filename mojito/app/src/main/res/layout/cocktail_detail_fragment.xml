@@ -6,10 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    >
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
     <TextView
@@ -86,54 +85,54 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detail_ingredients" />
 
     <TextView
-        android:id="@+id/Photo"
+        android:id="@+id/your_photo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:maxLines="15"
-        android:text="Your own photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detail_glass" />
 
     <Button
-        android:id="@+id/photobutton"
+        android:id="@+id/photo_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="53dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="Take photo"
+        android:lineSpacingExtra="12sp"
+        android:text="@string/take_photo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Photo"
+        app:layout_constraintTop_toBottomOf="@+id/your_photo"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/ownPhoto"
         android:layout_width="80pt"
         android:layout_height="80pt"
-        android:layout_marginTop="36dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/photobutton"
-        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        app:layout_constraintTop_toBottomOf="@+id/photo_button"
+        tools:srcCompat="@tools:sample/backgrounds/scenic"
+        android:contentDescription="@string/own_photograph" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

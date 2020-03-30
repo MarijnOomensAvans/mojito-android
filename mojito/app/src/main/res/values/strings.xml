@@ -3,4 +3,7 @@
     <string name="application_logo">Application logo</string>
     <string name="photograph_of_cocktail">Photograph of cocktail</string>
     <string name="ingredients">Ingredients</string>
+    <string name="your_photo">Your photo</string>
+    <string name="take_photo">Take photo</string>
+    <string name="own_photograph">Own photograph</string>
 </resources>

@@ -14,17 +14,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mojito.models.Cocktail;
+
 import java.util.ArrayList;
 
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "RecyclerViewAdapter";
 
-    private ArrayList<String> cocktailNames;
-    private ArrayList<Integer> cocktailIds;
+    private ArrayList<Cocktail> cocktails;
 
-    RecyclerViewAdapter(ArrayList<String> cocktailNames, ArrayList<Integer> cocktailIds) {
-        this.cocktailNames = cocktailNames;
-        this.cocktailIds = cocktailIds;
+    RecyclerViewAdapter(ArrayList<Cocktail> cocktails) {
+        this.cocktails = cocktails;
     }
 
     @NonNull
@@ -38,15 +38,15 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewH
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: onBindViewholder called");
 
-        holder.cocktailName.setText(cocktailNames.get(position));
+        holder.cocktailName.setText(cocktails.get(position).getmName());
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: clicked on " + cocktailNames.get(position));
+                Log.d(TAG, "onClick: clicked on " + cocktails.get(position).getmName());
 
                 MainActivity mainActivity = (MainActivity) v.getContext();
-                mainActivity.onItemSelected(cocktailIds.get(position));
+                mainActivity.onItemSelected(cocktails.get(position).getmId());
 
             }
         });
@@ -54,7 +54,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewH
 
     @Override
     public int getItemCount() {
-        return cocktailNames.size();
+        return cocktails.size();
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder{

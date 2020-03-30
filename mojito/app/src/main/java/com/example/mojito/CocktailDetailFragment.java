@@ -33,6 +33,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.mojito.models.Cocktail;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,12 +51,8 @@ public class CocktailDetailFragment extends Fragment {
     public static final String TAG = "CocktailDetailFragment";
 
     private int id;
-    private String name;
-    private String instructions;
-    private String image;
-    private String glass;
-    private ArrayList<String> ingredients = new ArrayList<>();
-    private ArrayList<String> amounts = new ArrayList<>();
+    private Cocktail mCocktail;
+
     public static final String MY_File_NAME = "MyOwnPhoto";
     private final int REQUEST_PERMISSION_CAMERA = 1;
 
@@ -77,7 +74,7 @@ public class CocktailDetailFragment extends Fragment {
             id = bundle.getInt("id");
         }
 
-        Button photoButton = view.findViewById(R.id.photobutton);
+        Button photoButton = view.findViewById(R.id.photo_button);
         photoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,10 +97,13 @@ public class CocktailDetailFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 try {
                     JSONObject cocktail = response.getJSONArray("drinks").getJSONObject(0);
-                    name = cocktail.getString("strDrink");
-                    instructions = cocktail.getString("strInstructions");
-                    image = cocktail.getString("strDrinkThumb");
-                    glass = "Glass: " + cocktail.getString("strGlass");
+                    mCocktail = new Cocktail(id, cocktail.getString("strDrink"));
+                    mCocktail.setmInstructions(cocktail.getString("strInstructions"));
+                    mCocktail.setmImage(cocktail.getString("strDrinkThumb"));
+                    mCocktail.setmGlass(cocktail.getString("strGlass"));
+
+                    ArrayList<String> ingredients = new ArrayList<>();
+                    ArrayList<String> amounts = new ArrayList<>();
 
                     for (int i = 1; i <= 15; i++) {
                         String ingredient = cocktail.getString("strIngredient" + i);
@@ -111,6 +111,9 @@ public class CocktailDetailFragment extends Fragment {
                         ingredients.add(ingredient);
                         amounts.add(cocktail.getString("strMeasure" + i));
                     }
+
+                    mCocktail.setmIngredients(ingredients);
+                    mCocktail.setmAmounts(amounts);
 
                     initialiseView(view);
                 } catch (JSONException e) {
@@ -128,10 +131,10 @@ public class CocktailDetailFragment extends Fragment {
 
     private void initialiseView(View view) {
         TextView nameText = view.findViewById(R.id.detail_name);
-        nameText.setText(name);
+        nameText.setText(mCocktail.getmName());
 
         TextView instructionsText = view.findViewById(R.id.detail_instructions);
-        instructionsText.setText(instructions);
+        instructionsText.setText(mCocktail.getmInstructions());
 
         TextView ingredientsTitleText = view.findViewById(R.id.detail_ingredients_title);
         ingredientsTitleText.setText(R.string.ingredients);
@@ -140,25 +143,28 @@ public class CocktailDetailFragment extends Fragment {
 
         StringBuilder measureIngredients = new StringBuilder();
 
-        for (int i = 0; i < ingredients.size(); i++) {
+        for (int i = 0; i < mCocktail.getmIngredients().size(); i++) {
             String appendAmount = "";
-            String amount = amounts.get(i);
+            String amount = mCocktail.getmAmounts().get(i);
             if (!amount.equals("null")) {
                 appendAmount = amount + " ";
             }
-            measureIngredients.append(appendAmount).append(ingredients.get(i)).append("\n");
+            measureIngredients.append(appendAmount).append(mCocktail.getmIngredients().get(i)).append("\n");
         }
 
         ingredientsText.setText(measureIngredients.toString());
 
         TextView glassText = view.findViewById(R.id.detail_glass);
-        glassText.setText(glass);
+        glassText.setText(mCocktail.getmGlass());
+
+        TextView yourPhotoText = view.findViewById(R.id.your_photo);
+        yourPhotoText.setText(R.string.your_photo);
 
         loadImage(view);
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             SharedPreferences prefs = getActivity().getSharedPreferences(MY_File_NAME, MODE_PRIVATE);
-            String photoLocation = prefs.getString("PhotoCocktail" + name, "");
+            String photoLocation = prefs.getString("PhotoCocktail" + mCocktail.getmName(), "");
             if (!photoLocation.equals("")) {
                 Bitmap bmp = BitmapFactory.decodeFile(photoLocation);
                 ImageView imageView = view.findViewById(R.id.ownPhoto);
@@ -173,7 +179,7 @@ public class CocktailDetailFragment extends Fragment {
         final ImageView mImageView;
         mImageView = view.findViewById(R.id.detail_image);
 
-        ImageRequest request = new ImageRequest(image,
+        ImageRequest request = new ImageRequest(mCocktail.getmImage(),
                 new Response.Listener<Bitmap>() {
                     @Override
                     public void onResponse(Bitmap bitmap) {
@@ -204,14 +210,12 @@ public class CocktailDetailFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSION_CAMERA)  {
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivityForResult(intent, 1);
                 }
-                }else {
-               return;
             }
         }
     }
@@ -228,7 +232,7 @@ public class CocktailDetailFragment extends Fragment {
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                String fileName = "/PhotoCocktail" + name + ".png";
+                String fileName = "/PhotoCocktail" + mCocktail.getmName() + ".png";
                 File file = new File(path, fileName);
                 if (file.exists ()) file.delete ();
                 try {
@@ -238,7 +242,7 @@ public class CocktailDetailFragment extends Fragment {
                     outStream.flush();
                     outStream.close();
                     SharedPreferences.Editor editor = getActivity().getSharedPreferences(MY_File_NAME, MODE_PRIVATE).edit();
-                    editor.putString("PhotoCocktail" + name, file.getAbsolutePath());
+                    editor.putString("PhotoCocktail" + mCocktail.getmName(), file.getAbsolutePath());
                     editor.apply();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -246,9 +250,6 @@ public class CocktailDetailFragment extends Fragment {
                     e.printStackTrace();
                 }
 
-            }
-            else{
-                return;
             }
         }
     }
