@@ -57,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements OverviewListFragm
             case R.id.toolbar_allCocktail:
                 goAllCocktails();
                 return true;
+            case R.id.toolbar_popularCocktail:
+                finish();
+                startActivity(getIntent());
+                return true;
             default:
                 return  false;
         }

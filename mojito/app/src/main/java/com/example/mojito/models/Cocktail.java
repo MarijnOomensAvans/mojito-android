@@ -11,6 +11,7 @@ public class Cocktail {
     private String mGlass;
     private ArrayList<String> mIngredients;
     private ArrayList<String> mAmounts;
+    private boolean mDrank;
 
     public Cocktail(int mId, String mName) {
         this.mId = mId;
@@ -71,5 +72,13 @@ public class Cocktail {
 
     public void setmAmounts(ArrayList<String> mAmounts) {
         this.mAmounts = mAmounts;
+    }
+
+    public boolean ismDrank() {
+        return mDrank;
+    }
+
+    public void setmDrank(boolean mDrank) {
+        this.mDrank = mDrank;
     }
 }

@@ -6,4 +6,8 @@
     <string name="your_photo">Your photo</string>
     <string name="take_photo">Take photo</string>
     <string name="own_photograph">Own photograph</string>
+    <string name="drank">Drank</string>
+    <string name="all_cocktails">All</string>
+    <string name="settings">Settings</string>
+    <string name="popular">Popular</string>
 </resources>
