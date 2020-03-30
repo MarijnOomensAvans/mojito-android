@@ -53,6 +53,9 @@ public class CocktailDetailFragment extends Fragment {
     private int id;
     private Cocktail mCocktail;
 
+    public static final String MY_File_NAME = "MyOwnPhoto";
+    private final int REQUEST_PERMISSION_CAMERA = 1;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,7 +164,7 @@ public class CocktailDetailFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             SharedPreferences prefs = getActivity().getSharedPreferences(MY_File_NAME, MODE_PRIVATE);
-            String photoLocation = prefs.getString("PhotoCocktail" + name, "");
+            String photoLocation = prefs.getString("PhotoCocktail" + mCocktail.getmName(), "");
             if (!photoLocation.equals("")) {
                 Bitmap bmp = BitmapFactory.decodeFile(photoLocation);
                 ImageView imageView = view.findViewById(R.id.ownPhoto);
@@ -207,14 +210,12 @@ public class CocktailDetailFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSION_CAMERA)  {
+        if (requestCode == REQUEST_PERMISSION_CAMERA) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivityForResult(intent, 1);
                 }
-                }else {
-               return;
             }
         }
     }
@@ -231,7 +232,7 @@ public class CocktailDetailFragment extends Fragment {
             if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                String fileName = "/PhotoCocktail" + name + ".png";
+                String fileName = "/PhotoCocktail" + mCocktail.getmName() + ".png";
                 File file = new File(path, fileName);
                 if (file.exists ()) file.delete ();
                 try {
@@ -241,7 +242,7 @@ public class CocktailDetailFragment extends Fragment {
                     outStream.flush();
                     outStream.close();
                     SharedPreferences.Editor editor = getActivity().getSharedPreferences(MY_File_NAME, MODE_PRIVATE).edit();
-                    editor.putString("PhotoCocktail" + name, file.getAbsolutePath());
+                    editor.putString("PhotoCocktail" + mCocktail.getmName(), file.getAbsolutePath());
                     editor.apply();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -249,9 +250,6 @@ public class CocktailDetailFragment extends Fragment {
                     e.printStackTrace();
                 }
 
-            }
-            else{
-                return;
             }
         }
     }
